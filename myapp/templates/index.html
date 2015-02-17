@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block content %}
+
+<html>
+    <head>
+        
+    </head>
+    <body>
+    	{%if current_user.is_authenticated()%}
+    	<p>You are logged on as {{current_user.name}}
+    	<a href="/logout">logout</a> </li>
+    	{%else%}
+    	<a href="/register">register</a> </li>
+    	<a href="/login">login</a> </li>
+  		 {% endif %}
+    	<form  action="/index" method="POST" enctype="multipart/form-data">
+    	{{ form.csrf_token }}
+        {{ render_field(form.room_name) }}
+        {% with messages = get_flashed_messages() %}
+  		{% if messages %}
+	    <ul class=flashes>
+	    {% for message in messages %}
+	      <li>{{ message }}</li>
+	    {% endfor %}
+	    </ul>
+	  	{% endif %}
+		{% endwith %}
+        <p><input type=submit value="Create Room">
+		</form> 
+		<p>Rooms avaliable
+		{% for room in rooms %}
+
+		<li>
+		<a href="/room/{{ room.name }}">{{ room.name }}</a> </li>
+{% endfor %}   
+{% endblock %}

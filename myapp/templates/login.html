@@ -1,0 +1,19 @@
+{# ourapp/templates/login.html #}
+
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+{% block content %}
+<html>
+    <head>
+        <title>Login Page</title>
+    </head>
+    <body>
+    	<form  action="/login" method="POST" enctype="multipart/form-data">
+    	 {{ form.csrf_token }}
+        {{ render_field(form.user) }}
+        {{ render_field(form.password) }}
+        <p><input type=submit value=Login>
+		</form>      
+    </body>
+</html>
+{% endblock %}
