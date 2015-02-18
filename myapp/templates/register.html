@@ -5,6 +5,7 @@
 {% from "_formhelpers.html" import render_field %}
 <form  action="/register" method="POST" enctype="multipart/form-data">
   <dl>
+  	{{ form.csrf_token }}
     {{ render_field(form.username) }}
     {{ render_field(form.email) }}
     {{ render_field(form.password) }}

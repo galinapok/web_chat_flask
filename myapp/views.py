@@ -1,7 +1,7 @@
 from flask import Flask, request,  flash, redirect, session
 from myapp import app 
 from flask import render_template
-from myapp.forms import RegistrationForm,  loginForm, RegisterRoomForm,  MessageForm
+from myapp.forms import RegistrationForm,  loginForm, RegisterRoomForm
 from myapp import database
 from myapp.database import db_session
 from myapp.models import User, Room, Message
@@ -22,15 +22,16 @@ def load_user(userid):
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/index',  methods=['GET', 'POST'])
 def index():
+	# Use authentication
 	userid = session['user_id']
 	load_user(userid)
 	room_list = []
 	if current_user.is_authenticated():
 		print ("test", current_user.name)
 	form = RegisterRoomForm()
+	# list of avalible rooms
 	room_list = Room.query.all()
 	
-	print form.validate_on_submit()
 	if request.method == 'POST' and form.validate_on_submit():
 		room = Room(form.room_name.data)
 		if not Room.query.filter_by(name=form.room_name.data).first():
@@ -52,10 +53,9 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
 	form = RegistrationForm()
-
-	if request.method == 'POST'and form.validate_on_submit()
-		user = User(form.username.data, form.email.data, form.password.data)
+	if request.method == 'POST'and form.validate_on_submit():		
 		filename = secure_filename(form.photo.data.filename)
+		user = User(form.username.data, form.email.data, form.password.data, filename)
 		form.photo.data.save('uploads/' + filename)		
 		db_session.add(user)
 		try:
