@@ -8,13 +8,11 @@
     </head>
     <body>
     	{%if current_user.is_authenticated()%}
-    	<p>You are logged on as {{current_user.name}}
-    	<a href="/logout">logout</a> </li>
-    	{%else%}
-    	<a href="/register">register</a> </li>
-    	<a href="/login">login</a> </li>
-  		 {% endif %}
-    	<form  action="/index" method="POST" enctype="multipart/form-data">
+    	
+
+    	<p align="right"><a href="/logout" >logout</a> </li>
+    	<div>
+    	<form  action="/index" method="POST" enctype="multipart/form-data" class ='login'>
     	{{ form.csrf_token }}
         {{ render_field(form.room_name) }}
         {% with messages = get_flashed_messages() %}
@@ -26,12 +24,21 @@
 	    </ul>
 	  	{% endif %}
 		{% endwith %}
-        <p><input type=submit value="Create Room">
+        <p><input type=submit value="Create Room" class="login-submit">
 		</form> 
-		<p>Rooms avaliable
+	</div>
+	<div class ='login'>
+		<p  >Rooms avaliable
 		{% for room in rooms %}
 
 		<li>
 		<a href="/room/{{ room.name }}">{{ room.name }}</a> </li>
-{% endfor %}   
+		{% endfor %}
+    	{%else%}
+    	<a href="/register">register</a> </li>
+    	<a href="/login">login</a> </li>
+  		 {% endif %}
+  		
+	</div>
+   
 {% endblock %}

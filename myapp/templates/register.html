@@ -3,7 +3,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
-<form  action="/register" method="POST" enctype="multipart/form-data">
+<form  action="/register" method="POST" enctype="multipart/form-data" class='login'>
   <dl>
   	{{ form.csrf_token }}
     {{ render_field(form.username) }}
@@ -13,6 +13,6 @@
     {{ render_field(form.photo)}}
     {{ render_field(form.accept_tos) }}
   </dl>
-  <p><input type=submit value=Register>
+  <p><input type=submit value=Register class="login-submit2">
 </form>
 {% endblock %}

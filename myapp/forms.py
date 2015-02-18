@@ -1,21 +1,21 @@
 from flask.ext.wtf import Form
-from wtforms import BooleanField, TextField, PasswordField, validators
+from wtforms import BooleanField, TextField, PasswordField, validators,  SelectField
 from wtforms.validators import Email, Required
 from flask.ext.wtf.file import FileField
 
 class RegistrationForm(Form):
     username = TextField('Username', [validators.Length(min=4, max=25)])
-    email = TextField('Email Address', [validators.Length(min=6, max=35)])
-    password = PasswordField('New Password', [
+    email = TextField('Email', [validators.Length(min=6, max=35)])
+    password = PasswordField('Password', [
         validators.Required(),
         validators.EqualTo('confirm', message='Passwords must match')
     ])
-    confirm = PasswordField('Repeat Password')
+    confirm = PasswordField('Repeat')
     photo = FileField('Your photo')
-    accept_tos = BooleanField('I accept the TOS', [validators.Required()])
-
+    accept_tos = SelectField(u'Gender',coerce=str, choices=[('male','Male'), ('female','Female')])
+   
 class loginForm(Form):
-    user= TextField('Email', validators=[Required(), Email()])
+    user= TextField('Username', validators=[Required()])
     password = PasswordField('Password', validators=[Required()])
 
 class RegisterRoomForm(Form):	

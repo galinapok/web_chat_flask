@@ -8,8 +8,8 @@ class User(Base):
     name = Column(String(50), unique=True)
     email = Column(String(120), unique=True)
     password = Column(String(120), unique=False)
-    user_image_file = Column(String(120), unique=True)
-
+    user_image_file = Column(String(120), unique=False)
+    gender = Column(String(7), unique=False)
     def is_authenticated(self):
         return True
 
@@ -22,11 +22,12 @@ class User(Base):
     def get_id(self):
         return unicode(self.id)
 
-    def __init__(self, name=None, email=None, password=None,  user_image_file= None):
+    def __init__(self, name=None, email=None, password=None,  user_image_file= None, gender=None ):
         self.name = name
         self.email = email
         self.password = password
         self. user_image_file = user_image_file
+        self.gender = gender
     def __repr__(self):
         return '<User %r>' % (self.name)
 

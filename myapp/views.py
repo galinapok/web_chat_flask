@@ -1,6 +1,6 @@
 from flask import Flask, request,  flash, redirect, session
 from myapp import app 
-from flask import render_template
+from flask import render_template, send_from_directory
 from myapp.forms import RegistrationForm,  loginForm, RegisterRoomForm
 from myapp import database
 from myapp.database import db_session
@@ -8,7 +8,7 @@ from myapp.models import User, Room, Message
 from werkzeug import secure_filename
 from flask.ext.login import LoginManager
 from flask.ext.login import login_user , logout_user , current_user , login_required
-import datetime
+import datetime, os
 from flask.ext.socketio import SocketIO, emit
 
 login_manager = LoginManager()
@@ -23,40 +23,48 @@ def load_user(userid):
 @app.route('/index',  methods=['GET', 'POST'])
 def index():
 	# Use authentication
-	userid = session['user_id']
-	load_user(userid)
-	room_list = []
-	if current_user.is_authenticated():
-		print ("test", current_user.name)
 	form = RegisterRoomForm()
+	if 'user_id' in session:
+		load_user(session['user_id'])
+		room_list = []
+		filename=""
+		if current_user.is_authenticated():
+			
+			filename= "uploads/" + current_user.user_image_file
+			print ("test", filename)
+
+			if request.method == 'POST' and form.validate_on_submit():
+				room = Room(form.room_name.data)
+				if not Room.query.filter_by(name=form.room_name.data).first():
+					db_session.add(room)
+					try:
+						db_session.commit()
+					except:
+			  			db_session.rollback()
+			   			raise
+					finally:
+					   db_session.close()  # optional, depends on use case
+				else:
+					message = "Room already exists"
+					flash(message, category='error')
+				
+	
 	# list of avalible rooms
 	room_list = Room.query.all()
 	
-	if request.method == 'POST' and form.validate_on_submit():
-		room = Room(form.room_name.data)
-		if not Room.query.filter_by(name=form.room_name.data).first():
-			db_session.add(room)
-			try:
-				db_session.commit()
-			except:
-	  			db_session.rollback()
-	   			raise
-			finally:
-			   db_session.close()  # optional, depends on use case
-		else:
-			message = "Room already exists"
-			flash(message, category='error')
-			return redirect('/index')
 			
 	return render_template("index.html", form=form, rooms= room_list)
 	
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+	filename = None
 	form = RegistrationForm()
 	if request.method == 'POST'and form.validate_on_submit():		
 		filename = secure_filename(form.photo.data.filename)
-		user = User(form.username.data, form.email.data, form.password.data, filename)
-		form.photo.data.save('uploads/' + filename)		
+		user = User(form.username.data, form.email.data, form.password.data, filename, form.accept_tos.data)
+		if filename:
+			print (app.config['UPLOAD_FOLDER'] )
+			form.photo.data.save('uploads/' + filename)		
 		db_session.add(user)
 		try:
 			db_session.commit()
@@ -110,15 +118,30 @@ def room(name):
 def clent_message_receive(message):  
 	now = datetime.datetime.utcnow()
 	userid = session['user_id']
-	user_name= User.query.filter_by(id=userid).first().name
-	emit('server message sent', {'message': message['data'], 'room': message['room'], 'time_received' : now, 'user': user_name}, broadcast=True)
-	room = Room.query.filter_by(name= message['room']).first()		
-	message = Message(room.id,  message['data'], user_name)	
-	db_session.add(message)
-	try:
-		db_session.commit()
-	except:
-		db_session.rollback()
-		raise
-	finally:
-	   db_session.close()  
+	if userid:
+		load_user(userid)
+		user_name= User.query.filter_by(id=userid).first().name
+		emit('server message sent', {'message': message['data'], 'room': message['room'], 'time_received' : now, 'user': user_name}, broadcast=True)
+		room = Room.query.filter_by(name= message['room']).first()	
+		if room:	
+			message = Message(room.id,  message['data'], user_name)	
+			db_session.add(message)
+			try:
+				db_session.commit()
+			except:
+				db_session.rollback()
+				raise
+			finally:
+			   db_session.close()  
+@app.route('/user/uploads/<path:filename>')
+@app.route('/uploads/<path:filename>')
+@app.route('/room/uploads/<path:filename>')
+def send_foo(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/user/<path:user>')
+def user_info(user):
+	use_name = user
+	requested_user= User.query.filter_by(name=user).first()
+
+	return render_template('user.html', requested_user= requested_user ) 	

@@ -1,13 +1,21 @@
 <html>
   <head>
-    {% if title %}
-    <title>{{ title }} - chat</title>
-    {% else %}
+  	<link rel="stylesheet" href="/static/style.css">
+    
     <title>Welcome to chat</title>
-    {% endif %}
+   
   </head>
   <body>
-    <div>Webchat: <a href="/index">Home</a></div>
+    Webchat: <a href="/index">Home</a>
+   	{%if current_user %}
+    {%if current_user.is_authenticated()%}
+   
+    
+    	<p align="right">You are logged on as <a href="/user/{{current_user.name}}">{{current_user.name}}</a> 
+    	
+   	{%endif%}
+   	{%endif%}
+    </div>
     <hr>
     {% block content %}{% endblock %}
   </body>
