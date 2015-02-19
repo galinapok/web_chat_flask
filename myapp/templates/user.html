@@ -5,6 +5,9 @@
 {% from "_formhelpers.html" import render_field %}
 {% block content %}
 <div>
-    <p><img src= "uploads/{{requested_user.user_image_file}}" class=image></a>
+    <p><img src= "uploads/{{requested_user.user_image_file}}" class=image>
+ 	<p>Name: {{requested_user.name}} 
+    <p>Email adress: {{requested_user.email}}    
+    <p>Gender: {{requested_user.gender}} 
 </div>
 {% endblock %}

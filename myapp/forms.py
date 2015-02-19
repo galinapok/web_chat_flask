@@ -19,5 +19,5 @@ class loginForm(Form):
     password = PasswordField('Password', validators=[Required()])
 
 class RegisterRoomForm(Form):	
-    room_name= TextField('Room name', [validators.Length(min=4, max=25)])
+    room_name= TextField('Room name', [validators.Length(min=4, max=25), validators.Regexp('^\w+$', flags=0, message="Room name should contain only [a-zA-Z0-9_] symbols")])
    

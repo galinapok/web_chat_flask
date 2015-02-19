@@ -4,13 +4,16 @@
 
 <html>
     <head>
-        
+         
     </head>
     <body>
-    	{%if current_user.is_authenticated()%}
-    	
+    	{%if current_user%}
+    		{%if current_user.is_authenticated()%}
+    		<p align="right">You are logged on as <a href="/user/{{current_user.name}}">{{current_user.name}}</a>
 
-    	<p align="right"><a href="/logout" >logout</a> </li>
+    		<p align="right"><a href="/logout" >logout</a> </li>
+    		
+    			
     	<div>
     	<form  action="/index" method="POST" enctype="multipart/form-data" class ='login'>
     	{{ form.csrf_token }}
@@ -24,6 +27,7 @@
 	    </ul>
 	  	{% endif %}
 		{% endwith %}
+
         <p><input type=submit value="Create Room" class="login-submit">
 		</form> 
 	</div>
@@ -38,7 +42,7 @@
     	<a href="/register">register</a> </li>
     	<a href="/login">login</a> </li>
   		 {% endif %}
-  		
+  		{% endif %}
 	</div>
    
 {% endblock %}

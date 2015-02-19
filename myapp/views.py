@@ -10,6 +10,8 @@ from flask.ext.login import LoginManager
 from flask.ext.login import login_user , logout_user , current_user , login_required
 import datetime, os
 from flask.ext.socketio import SocketIO, emit
+from threading import Thread
+from time import sleep
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -33,7 +35,7 @@ def index():
 			filename= "uploads/" + current_user.user_image_file
 			print ("test", filename)
 
-			if request.method == 'POST' and form.validate_on_submit():
+			if request.method == 'POST' and form.validate():
 				room = Room(form.room_name.data)
 				if not Room.query.filter_by(name=form.room_name.data).first():
 					db_session.add(room)
@@ -110,8 +112,7 @@ def room(name):
 	messages= Message.query.filter_by(parent_id=room_id)[1:3]
 	for i in messages:
 		print i.message
-	if request.method == 'POST': # and form.validate_on_submit():
-		print  ('time', form.message.data)
+	
 	return render_template('room.html', room_name=name, messages= messages)    
 
 @socketio.on('client message sent', namespace= '/room-socket')
@@ -123,6 +124,7 @@ def clent_message_receive(message):
 		user_name= User.query.filter_by(id=userid).first().name
 		emit('server message sent', {'message': message['data'], 'room': message['room'], 'time_received' : now, 'user': user_name}, broadcast=True)
 		room = Room.query.filter_by(name= message['room']).first()	
+		print ("room",  message['room'])
 		if room:	
 			message = Message(room.id,  message['data'], user_name)	
 			db_session.add(message)
@@ -139,9 +141,45 @@ def clent_message_receive(message):
 def send_foo(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+
 @app.route('/user/<path:user>')
 def user_info(user):
 	use_name = user
 	requested_user= User.query.filter_by(name=user).first()
 
 	return render_template('user.html', requested_user= requested_user ) 	
+
+class MyThread(threading.Thread):
+    def __init__(self, node_port):
+        super(MyThread, self).__init__()
+        self.node_port = node_port
+        self.published_files_list = []
+    def run(self):
+        while True:
+            time.sleep(3)           
+            for file in os.listdir("./upload"):
+                if file not in self.published_files_list:
+                    file_name = file;
+                    print file_name
+                    self.published_files_list.append(file)
+
+class MyThread(threading.Thread):
+    def __init__(self, node_port):
+        super(MyThread2, self).__init__()
+        self.node_port = node_port
+        self.published_files_list = []
+    def run(self):
+        while True:
+            time.sleep(90)
+            news_html = urllib2.urlopen("http://stackoverflow.com/").read()
+            regex = re.compile('<h3><a\shref="([^>]*>[^<]*</a>)')
+            titles = regex.findall(news_html)
+            titles = titles[2:12]
+
+            digest_message = ""
+            for title in titles:
+                digest_message += "<a href=\"http://stackoverflow.com" + title + '<br>'           
+                socketio.emit('news',
+                {('message': digest_message) },
+                namespace= '/news')
+                    
