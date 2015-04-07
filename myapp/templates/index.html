@@ -2,47 +2,49 @@
 {% from "_formhelpers.html" import render_field %}
 {% block content %}
 
-<html>
-    <head>
-         
-    </head>
-    <body>
-    	{%if current_user%}
-    		{%if current_user.is_authenticated()%}
-    		<p align="right">You are logged on as <a href="/user/{{current_user.name}}">{{current_user.name}}</a>
+{%if current_user.is_authenticated()%}
+    <p align="right">You are logged on as <a href="/user/{{current_user.name}}">{{current_user.name}}</a>
+    <p align="right"><a href="/logout" >logout</a> </li>
+        <div>
+            <form  action="/index" method="POST" enctype="multipart/form-data" class ='login'>
+                {{ form.csrf_token }}
+                {{ render_field(form.room_name) }}
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class=flashes>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                {% endwith %}
 
-    		<p align="right"><a href="/logout" >logout</a> </li>
-    		
-    			
-    	<div>
-    	<form  action="/index" method="POST" enctype="multipart/form-data" class ='login'>
-    	{{ form.csrf_token }}
-        {{ render_field(form.room_name) }}
-        {% with messages = get_flashed_messages() %}
-  		{% if messages %}
-	    <ul class=flashes>
-	    {% for message in messages %}
-	      <li>{{ message }}</li>
-	    {% endfor %}
-	    </ul>
-	  	{% endif %}
-		{% endwith %}
+                <p><input type=submit value="Create Room" class="login-submit">
+            </form> 
+    </div>
+    <div class ='login'>
+        <p >Rooms avaliable now
+        {% for room in rooms %}
 
-        <p><input type=submit value="Create Room" class="login-submit">
-		</form> 
-	</div>
-	<div class ='login'>
-		<p  >Rooms avaliable
-		{% for room in rooms %}
+        <li>
+        <a href="/room/{{ room.name }}">{{ room.name }}</a> </li>
+        {% endfor %}
+    </div>
 
-		<li>
-		<a href="/room/{{ room.name }}">{{ room.name }}</a> </li>
-		{% endfor %}
-    	{%else%}
-    	<a href="/register">register</a> </li>
-    	<a href="/login">login</a> </li>
-  		 {% endif %}
-  		{% endif %}
-	</div>
-   
+{%else%}
+    <div>
+        <a href="/register">register</a> </li>
+        <a href="/login">login</a> </li>
+    </div>    
+</div>
+{% endif %}
+
+<div >
+    <h4 >Links to latest posts from stackoverflow.com </h4>
+    {% for title in titles %}
+        
+        <p> 
+        <li><a href=http://stackoverflow.com{{title}} > http://stackoverflow.com{{title}} </a>
+    {% endfor %}
+    </div>
 {% endblock %}

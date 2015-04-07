@@ -287,6 +287,18 @@ label {
   background: url("../img/arrow.png") 0 0 no-repeat;
 }
 
+
+
+#messages {
+  content: '';
+  position: absolute;
+  text-align: center
+  text-shadow: 2px 2px #ff0000;
+ 
+  height: 19px;
+  
+}
+
 ::-moz-focus-inner {
   border: 0;
   padding: 0;

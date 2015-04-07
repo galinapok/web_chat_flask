@@ -7,12 +7,13 @@ from myapp.database import db_session
 from myapp.models import User, Room, Message
 from werkzeug import secure_filename
 from flask.ext.login import LoginManager
-from flask.ext.login import login_user , logout_user , current_user , login_required
+from flask.ext.login import login_user, logout_user, current_user, login_required
 import datetime, os
 from flask.ext.socketio import SocketIO, emit
 from threading import Thread
 from time import sleep
-
+from urllib2 import urlopen, HTTPError
+import re
 login_manager = LoginManager()
 login_manager.init_app(app)
 socketio = SocketIO(app)
@@ -21,20 +22,34 @@ def load_user(userid):
     return User.query.filter_by(id=userid).first()
 
 
+def get_news():        
+	news_html = urlopen("http://stackoverflow.com/").read()
+	regex = re.compile('<h3><a\shref="([^>]*>[^<]*</a>)')
+	
+	titles = regex.findall(news_html)            
+	titles = titles[2:12]
+	
+	digest_message = ""
+	for title in titles:
+		#print "test"
+		
+		digest_message = re.search( r'(/\S+)"', title, flags=0)
+		          
+		yield  digest_message.group(1)
+
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/index',  methods=['GET', 'POST'])
 def index():
-	# Use authentication
+	# Map registration form
 	form = RegisterRoomForm()
+	titles= list(get_news())
+	
+	# Use authentication
 	if 'user_id' in session:
 		load_user(session['user_id'])
 		room_list = []
-		filename=""
-		if current_user.is_authenticated():
-			
-			filename= "uploads/" + current_user.user_image_file
-			print ("test", filename)
-
+		
+		if current_user.is_authenticated():					
 			if request.method == 'POST' and form.validate():
 				room = Room(form.room_name.data)
 				if not Room.query.filter_by(name=form.room_name.data).first():
@@ -49,13 +64,9 @@ def index():
 				else:
 					message = "Room already exists"
 					flash(message, category='error')
-				
-	
 	# list of avalible rooms
 	room_list = Room.query.all()
-	
-			
-	return render_template("index.html", form=form, rooms= room_list)
+	return render_template("index.html", form=form, rooms= room_list, titles=titles)
 	
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -135,6 +146,7 @@ def clent_message_receive(message):
 				raise
 			finally:
 			   db_session.close()  
+
 @app.route('/user/uploads/<path:filename>')
 @app.route('/uploads/<path:filename>')
 @app.route('/room/uploads/<path:filename>')
@@ -146,40 +158,10 @@ def send_foo(filename):
 def user_info(user):
 	use_name = user
 	requested_user= User.query.filter_by(name=user).first()
-
 	return render_template('user.html', requested_user= requested_user ) 	
 
-class MyThread(threading.Thread):
-    def __init__(self, node_port):
-        super(MyThread, self).__init__()
-        self.node_port = node_port
-        self.published_files_list = []
-    def run(self):
-        while True:
-            time.sleep(3)           
-            for file in os.listdir("./upload"):
-                if file not in self.published_files_list:
-                    file_name = file;
-                    print file_name
-                    self.published_files_list.append(file)
 
-class MyThread(threading.Thread):
-    def __init__(self, node_port):
-        super(MyThread2, self).__init__()
-        self.node_port = node_port
-        self.published_files_list = []
-    def run(self):
-        while True:
-            time.sleep(90)
-            news_html = urllib2.urlopen("http://stackoverflow.com/").read()
-            regex = re.compile('<h3><a\shref="([^>]*>[^<]*</a>)')
-            titles = regex.findall(news_html)
-            titles = titles[2:12]
 
-            digest_message = ""
-            for title in titles:
-                digest_message += "<a href=\"http://stackoverflow.com" + title + '<br>'           
-                socketio.emit('news',
-                {('message': digest_message) },
-                namespace= '/news')
+   
+    
                     
