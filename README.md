@@ -1,6 +1,7 @@
 # web_chat_flask
 
 Short description:
+
 This is simple web chat that has the following functionality:
 - User authentification
 - Authenticated users can create chat rooms and send messages
