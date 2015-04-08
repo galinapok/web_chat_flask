@@ -9,6 +9,7 @@ This is simple web chat that has the following functionality:
 
 Folders structure
 Directories content:
+
 myapp - WEB application folder.
 \myapp\templates -  Jinja2 Templates location 
 run.py - startup script 
