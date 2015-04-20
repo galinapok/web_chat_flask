@@ -2,49 +2,62 @@
 {% from "_formhelpers.html" import render_field %}
 {% block content %}
 
+<ul id="sddm" class=login >
+    <li ><a href="#">Home</a>       
+    </li>
+    <li><a href="#" onmouseover="mopen('m2')" onmouseout="mclosetime()">Rooms avaliable</a>
+        <div id="m2" onmouseover="mcancelclosetime()" onmouseout="mclosetime()">
+            {%if current_user.is_authenticated()%}
+                {% for room in rooms %}
+                    <a href="/room/{{ room.name }}" >{{ room.name }}</a>
+                {% endfor %}
+                </div>
+                </li>
+                <li><a href="/logout" >logout</a></li>
+            {%else%}
+                {% for room in rooms %}  
+                    <a href="/room/{{ room.name }}" class ="room">{{ room.name }}</a>
+                {% endfor %}            
+                </li>  
+                <li><a href="/register">register</a> </li>
+                <li><a href="/login">login</a> </li>
+            {% endif %}
+    <li><a href="#">Help</a></li>
+    <li><input type="button" class = button value="Hide IT news" id="run" > 
+</ul>
+
+<div style="clear:both"></div>
+
 {%if current_user.is_authenticated()%}
-    <p align="right">You are logged on as <a href="/user/{{current_user.name}}">{{current_user.name}}</a>
-    <p align="right"><a href="/logout" >logout</a> </li>
-        <div>
-            <form  action="/index" method="POST" enctype="multipart/form-data" class ='login'>
-                {{ form.csrf_token }}
-                {{ render_field(form.room_name) }}
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul class=flashes>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-                {% endwith %}
-
-                <p><input type=submit value="Create Room" class="login-submit">
-            </form> 
-    </div>
     <div class ='login'>
-        <p >Rooms avaliable now
-        {% for room in rooms %}
-
-        <li>
-        <a href="/room/{{ room.name }}">{{ room.name }}</a> </li>
-        {% endfor %}
-    </div>
-
-{%else%}
-    <div>
-        <a href="/register">register</a> </li>
-        <a href="/login">login</a> </li>
+        <form  action="/index" method="POST" enctype="multipart/form-data" class="login" >
+            <dl id="sddm" class=login >
+            {{ form.csrf_token }}
+            {{ render_field(form.room_name) }}
+            <p class='login2'></p><br>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+            {% endwith %}
+            <input type=submit value="Create Room" class = button id = "login" >
+            </dl>
+        </form> 
     </div>    
-</div>
 {% endif %}
 
-<div >
-    <h4 >Links to latest posts from stackoverflow.com </h4>
-    {% for title in titles %}
-        
-        <p> 
-        <li><a href=http://stackoverflow.com{{title}} > http://stackoverflow.com{{title}} </a>
-    {% endfor %}
+<div class="toggler"> 
+    <div id="effect" class="ui-widget-content ui-corner-all"> 
+        <h3 id="sddm" class="ui-widget-header ui-corner-all  login">Links to latest posts from stackoverflow.com</h3> 
+        {% for title in titles %}
+            <li><a href=http://stackoverflow.com{{title}} > http://stackoverflow.com{{title}} </a><br>
+        {% endfor %}  
     </div>
+<div>
+
+           
 {% endblock %}

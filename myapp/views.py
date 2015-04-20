@@ -61,6 +61,7 @@ def index():
 			   			raise
 					finally:
 					   db_session.close()  # optional, depends on use case
+					   return redirect('/')
 				else:
 					message = "Room already exists"
 					flash(message, category='error')

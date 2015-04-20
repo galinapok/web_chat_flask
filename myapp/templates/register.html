@@ -2,17 +2,29 @@
 
 {% extends "base.html" %}
 {% block content %}
+<ul id="sddm" class=login >
+    <li ><a href="/index">Home</a>
+</ul>  <br>     
+
 {% from "_formhelpers.html" import render_field %}
 <form  action="/register" method="POST" enctype="multipart/form-data" class='login'>
-  <dl>
+  <dl id="sddm" class=login >
   	{{ form.csrf_token }}
+
     {{ render_field(form.username) }}
+    <p class='login2'></p><br>
+
     {{ render_field(form.email) }}
+    <p class='login2'></p><br>
     {{ render_field(form.password) }}
+    <p class='login2'></p><br>
     {{ render_field(form.confirm) }}
+    <p class='login2'></p><br>
     {{ render_field(form.photo)}}
+    <p class='login2'></p><br>
     {{ render_field(form.accept_tos) }}
+ 
   </dl>
-  <p><input type=submit value=Register class="login-submit2">
+  <p><input  type=submit value=Register class = button id = "login" >
 </form>
 {% endblock %}

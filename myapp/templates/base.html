@@ -1,15 +1,16 @@
 <html>
   <head>
-  	<link rel="stylesheet" href="/static/style.css">
-    
-    <title>Welcome to chat</title>
-   
-  </head>
-  <body>
-    Webchat: <a href="/index">Home</a>
-  
-    </div>
-    <hr>
-    {% block content %}{% endblock %}
+  	<link rel="stylesheet" href="/static/style.css">    
+    <title>Welcome to IT chat</title>
+    <script type="text/javascript" src="/static/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="/static/socket.io.min.js"></script>
+    <script type="text/javascript" src="/static/script.js"></script> 
+    </head>
   </body>
+    {%if current_user.is_authenticated()%}
+      <p>Welcome to IT chat  <a href="/user/{{current_user.name}}">{{current_user.name}}</a></em>
+    {% endif %}
+    
+    {% block content %}{% endblock %}
+  <body>
 </html>

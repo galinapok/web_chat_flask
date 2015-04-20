@@ -3,27 +3,30 @@
 {% extends "base.html" %}
 {% from "_formhelpers.html" import render_field %}
 {% block content %}
-<html>
-    <head>
-        <title>Login Page</title>
-    </head>
-    <body>
 
-    	<form  action="/login" method="POST" enctype="multipart/form-data" class="login">
-    	{{ form.csrf_token }}
+<ul id="sddm" class=login > 
+    <li ><a href="/index">Home</a></li>
+</ul><br>
+    
+<form  action="/login" method="POST" enctype="multipart/form-data" class="login">
+   <dl id="sddm" class=login > 
+        {{ form.csrf_token }}
         {{ render_field(form.user) }}
+        <p class='login2'></p><br>
         {{ render_field(form.password) }}
-        {% with messages = get_flashed_messages() %}
-  		{% if messages %}
-	    <ul class=flashes>
-	    {% for message in messages %}
-	      <li>{{ message }}</li>
-	    {% endfor %}
-	    </ul>
-	  	{% endif %}
-		{% endwith %}
-        <p><input type=submit value=Login class="login-submit">
-		</form>      
-    </body>
-</html>
+        <p class='login2'></p>
+         {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <input type=submit value=Login class = button id = "login">
+    </dl>
+</form>      
+    
 {% endblock %}
+sudo apt-get install kde-l10n-ru
