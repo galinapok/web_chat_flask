@@ -21,3 +21,5 @@ Few main features:
  - flask-socketio extension was used for bi-directional communications between the clients and the server(sending chat messages)
  - The client-side application uses the SocketIO Javascript library to establish connection to the server.
 
+link to heroku:
+http://chat2galina.herokuapp.com
